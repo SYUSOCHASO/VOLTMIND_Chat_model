@@ -1,0 +1,1886 @@
+/* ルート変数の定義 */
+:root {
+    --primary-color: #FFD700;
+    --primary-gradient: linear-gradient(135deg, #FFD700, #FDB813);
+    --primary-hover: #FDB813;
+    --background-color: #f0f4f8;
+    --text-color: #2c3e50;
+    --secondary-color: #fff9e8;
+    --shadow-color: rgba(255, 215, 0, 0.1);
+    --message-bg: #ffffff;
+    --user-message-bg: linear-gradient(135deg, #FFD700, #FDB813);
+    --user-message-text: #ffffff;
+    --bot-avatar-bg: linear-gradient(135deg, #ffffff, #ffffff);
+    --bot-avatar-color: #ffffff;
+    --border-radius: 20px;
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --chat-box-bg: rgba(255, 255, 255, 0.8);
+    --header-bg: rgba(255, 255, 255, 0.95);
+    --input-bg: rgba(255, 255, 255, 0.9);   /* メッセージ入力欄の枠内の色 */
+    --border-color: rgba(255, 215, 0, 0.2);
+    --sidebar-bg: #ffffff;
+    --sidebar-hover: rgba(255, 215, 0, 0.1);
+    --sidebar-active: var(--primary-gradient);
+    --sidebar-text: #2c3e50;
+    --glass-bg: #ffffff;
+    --glass-border: rgba(209, 209, 209, 0.8);       /* メッセージ入力欄の周りのラインの色 */
+    --glass-shadow: 0 8px 32px rgba(255, 215, 0, 0.1);
+    --neumorphic-shadow: 
+        12px 12px 24px rgba(166, 180, 200, 0.2),
+        -12px -12px 24px rgba(255, 255, 255, 0.7);
+    --selected-bg: rgba(255, 215, 0, 0.2);  /* 選択状態の背景色 */
+}
+
+[data-theme="dark"] {
+    --primary-color: #FFD700;
+    --primary-gradient: linear-gradient(135deg, #FFD700, #FDB813);
+    --primary-hover: #FDB813;
+    --background-color: #1a1f24;
+    --text-color: #ecf0f1;
+    --secondary-color: #2d3436;
+    --shadow-color: rgba(255, 215, 0, 0.2);
+    --message-bg: rgba(45, 52, 54, 0.8);
+    --user-message-bg: linear-gradient(135deg, #FFD700, #FDB813);
+    --user-message-text: #ffffff;
+    --bot-avatar-bg: linear-gradient(135deg, #ffffff, #ffffff); /* ライトモードと同じ白色に変更 */
+    --bot-avatar-color: #ffffff;
+    --chat-box-bg: rgba(26, 31, 36, 0.8);
+    --header-bg: rgba(26, 31, 36, 0.95);
+    --input-bg: rgba(45, 52, 54, 0.9);
+    --border-color: rgba(255, 215, 0, 0.2);
+    --sidebar-bg: #2d3436;
+    --sidebar-hover: rgba(255, 215, 0, 0.1);
+    --sidebar-active: var(--primary-gradient);
+    --sidebar-text: #ffffff;
+    --glass-bg: #2d3436;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --neumorphic-shadow: 
+        12px 12px 24px rgba(0, 0, 0, 0.3),
+        -12px -12px 24px rgba(255, 255, 255, 0.05);
+    --selected-bg: rgba(255, 215, 0, 0.3);  /* ダークモード時の選択状態の背景色 */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(253, 184, 19, 0.1) 0%, transparent 50%);
+}
+
+[data-theme="dark"] body {
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(253, 184, 19, 0.15) 0%, transparent 50%);
+}
+
+#app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+}
+
+#sidebar {
+    width: 280px;
+    min-width: 280px;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    transition: var(--transition);
+    height: 100vh;
+    box-shadow: var(--neumorphic-shadow);
+    position: fixed;
+    left: -280px;
+    z-index: 1000;
+}
+
+#sidebar.active {
+    left: 0;
+}
+
+/* 複数選択モードのUI */
+.multi-select-ui {
+    padding: 1rem;
+    background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: var(--neumorphic-shadow);
+}
+
+.multi-select-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    justify-content: space-between;
+}
+
+.selected-count {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    flex-grow: 1;
+}
+
+.cancel-select-btn,
+.delete-selected-btn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.cancel-select-btn {
+    background: var(--glass-bg);
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
+}
+
+.delete-selected-btn {
+    background: #ef4444;
+    color: white;
+}
+
+.delete-selected-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.cancel-select-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-shadow);
+}
+
+.delete-selected-btn:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+/* チャットアイテムの複数選択モード */
+.chat-item.multi-select-mode {
+    cursor: pointer;
+    position: relative;
+    padding-left: 2.5rem;
+}
+
+.chat-item.multi-select-mode::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.chat-item.multi-select-mode.selected::before {
+    background: var(--primary-gradient);
+    border-color: transparent;
+}
+
+.chat-item.multi-select-mode.selected::after {
+    content: '✓';
+    position: absolute;
+    left: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 0.8rem;
+}
+
+.chat-item.multi-select-mode.selected {
+    background: var(--selected-bg);
+}
+
+#new-chat-btn {
+    margin: 1.2rem;
+    padding: 1rem;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    transform: translateY(0);
+}
+
+#new-chat-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+#new-chat-btn:active {
+    transform: translateY(1px);
+}
+
+#chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0.8rem;
+}
+
+.chat-item {
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--sidebar-text);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    position: relative;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--neumorphic-shadow);
+}
+
+.chat-item:hover {
+    background: var(--sidebar-hover);
+    transform: translateY(-2px);
+}
+
+.chat-item.active {
+    background: var(--sidebar-active);
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.chat-item-title {
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 0.8rem;
+    font-weight: 500;
+}
+
+/* タイトル編集入力フィールドのスタイル */
+.chat-title-input {
+    width: 100%;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: var(--transition);
+}
+
+.chat-title-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.chat-item.active .chat-title-input {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.chat-item.active .chat-title-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.delete-chat-btn {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    z-index: 2;
+    border-radius: 50%;
+}
+
+.delete-chat-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.chat-item:hover .delete-chat-btn,
+.chat-item.active .delete-chat-btn {
+    opacity: 1;
+}
+
+#main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--chat-box-bg);
+    min-width: 0;
+    height: 100vh;
+    position: relative;
+    margin-left: 0;
+    transition: var(--transition);
+    width: 100%;
+}
+
+#main-content.sidebar-active {
+    margin-left: 280px;
+}
+
+/* サイドバーが開いているときのヘッダーの位置調整 */
+#main-content.sidebar-active #chat-header {
+    width: 100%;
+}
+
+#chat-header {
+    position: fixed;  /* relativeからfixedに変更 */
+    top: 0;          /* 追加 */
+    right: 0;        /* 追加 */
+    left: 0;         /* 追加 */
+    padding: 1.2rem;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 70px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 10;
+    box-shadow: var(--neumorphic-shadow);
+    transform: translateY(0);
+    transition: var(--transition);
+}
+
+/* ヘッダーの非表示状態のスタイル */
+#chat-header.header-hidden {
+    transform: translateY(-100%);
+}
+
+/* ヘッダートグルボタンのスタイル */
+.header-toggle {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 5px 20px;  /* paddingを小さく */
+    font-size: 0.8rem;  /* フォントサイズを小さく */
+    cursor: pointer;
+    z-index: 1000;
+    transition: var(--transition);
+    box-shadow: var(--neumorphic-shadow);
+}
+
+/* ヘッダー表示時（非アクティブ時）のスタイル */
+.header-toggle {
+    top: 78px; /* ヘッダーの高さに応じて調整 */
+    border-radius: var(--border-radius);
+    opacity: 0.7;
+}
+
+/* ヘッダー非表示時（アクティブ時）のスタイル */
+.header-toggle.active {
+    top: -3px;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    opacity: 1;
+}
+
+/* ホバー時のスタイル */
+.header-toggle:hover {
+    opacity: 1;
+}
+
+/* ヘッダータイトルとロゴのコンテナ */
+.header-title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+}
+
+/* ヘッダーボタンのコンテナ */
+.header-buttons {
+    margin-left: auto; /* 右寄せにする */
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* 通常モードのスタイル */
+#chat-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ロゴのスタイル */
+.header-logo {
+    height: 40px;
+    width: auto;
+    transition: var(--transition);
+}
+
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 1rem;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    border: none;
+    box-shadow: inset 0 0 0 1px var(--border-color); /* より細い線を実現 */
+}
+
+/* 通常モードのホバー効果 */
+.logo-link:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 0 0 1px var(--border-color), /* 枠線を維持 */
+                0 8px 25px var(--shadow-color); /* 外側の影 */
+}
+
+/* ダークモード時のホバー効果を追加 */
+[data-theme="dark"] .logo-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+}
+
+/* 設定ボタン */
+#settings-btn {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    box-shadow: var(--neumorphic-shadow);
+    position: relative;
+}
+
+/* アイコンの回転アニメーションを分離 */
+#settings-btn i {
+    transition: var(--transition);
+}
+
+#settings-btn:hover i {
+    transform: rotate(45deg);
+}
+
+/* ツールチップのスタイルを修正 */
+#settings-btn::after {
+    content: '設定';
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--primary-gradient);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    pointer-events: none;
+}
+
+#settings-btn:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* ボタン自体のホバー効果を修正 */
+#settings-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+/* ダークモードのボタン */
+#theme-toggle {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.8rem;
+    border-radius: 50%;
+    transition: var(--transition);
+    box-shadow: var(--neumorphic-shadow);
+    position: relative;  /* 追加 */
+}
+
+/* アイコンの回転アニメーション */
+#theme-toggle i {
+    transition: var(--transition);
+}
+
+#theme-toggle:hover i {
+    transform: rotate(45deg);
+}
+
+/* ツールチップ */
+#theme-toggle::after {
+    content: 'ダークモード';
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    background: var(--primary-gradient);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    pointer-events: none;
+}
+
+#theme-toggle:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* ボタンのホバー効果 */
+#theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+#toggle-sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: block;
+    cursor: pointer;
+    transition: var(--transition);
+    background: none;
+    border: none;
+    padding: 8px;
+}
+
+#toggle-sidebar i {
+    /* FontAwesomeアイコンを非表示に */
+    display: none;
+}
+
+#toggle-sidebar::before,
+#toggle-sidebar::after,
+#toggle-sidebar span {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text-color);
+    margin: 5px 0;
+    transition: var(--transition);
+}
+
+#toggle-sidebar span {
+    /* 真ん中の線用 */
+    margin: 5px 0;
+}
+
+/* ホバー時のエフェクト */
+#toggle-sidebar:hover::before,
+#toggle-sidebar:hover::after,
+#toggle-sidebar:hover span {
+    background: var(--primary-color);
+}
+
+.sidebar-active #toggle-sidebar {
+    left: 320px; /* サイドバーの幅に応じて調整 */
+}
+
+#toggle-sidebar:hover {
+    transform: scale(1.1);
+}
+
+/* ログアウトボタン */
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--primary-gradient);  /* 直接指定を変数に変更 */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.logout-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    background: var(--primary-gradient);  /* 直接指定を変数に変更 */
+}
+
+.logout-btn:hover::before {
+    left: 100%;
+}
+
+.logout-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.2);
+}
+
+.logout-btn i {
+    transition: transform 0.3s ease;
+}
+
+.logout-btn:hover i {
+    transform: translateX(3px);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 215, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 215, 0, 0);
+    }
+}
+
+.logout-btn.pulse {
+    animation: pulse 2s infinite;
+}
+
+#chat-box {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    height: 100vh;  /* 変更 */
+    padding-top: calc(70px + 1.2rem * 2);  /* ヘッダーの高さ分を追加 */
+    position: relative;
+    z-index: 1;
+}
+
+/* モーダルのスタイル */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--glass-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--glass-shadow);
+    border: 1px solid var(--glass-border);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh; /* モーダルの最大高さを設定 */
+    overflow-y: auto; /* スクロール可能に */
+}
+
+.modal-body {
+    text-align: center;  /* 内容を中央揃えに */
+    padding: 20px;
+    overflow-y: auto; /* スクロール可能に */
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h2 {
+    margin: 0;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 0.5rem;
+    transition: var(--transition);
+}
+
+.close-modal:hover {
+    transform: rotate(90deg);
+}
+
+.color-setting {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;  /* 縦方向に並べる */
+    align-items: center;     /* 中央揃え */
+    gap: 15px;              /* 要素間の間隔 */
+}
+
+.color-setting label {
+    display: block;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.color-picker-wrapper {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-direction: column;  /* 縦方向に並べる */
+    align-items: center;     /* 中央揃え */
+    gap: 8px;               /* 要素間の間隔 */
+}
+
+#accent-color {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    background: transparent;
+    margin: 0 auto;
+}
+
+#accent-color::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#accent-color::-webkit-color-swatch {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--neumorphic-shadow);
+}
+
+.color-value {
+    font-family: monospace;
+    padding: 0.5rem 1rem;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--glass-border);
+    color: var(--text-color);
+    text-align: center;
+}
+
+.reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+    margin: 0 auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.reset-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--glass-shadow);
+}
+
+.message {
+    max-width: 80%;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+/* メッセージコピーのスタイル */
+.copy-message-btn {
+    position: absolute;
+    bottom: -30px;  /* 枠外に出すために負の値に変更 */
+    right: 0;       /* 右端に合わせる */
+    padding: 4px 12px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: var(--transition);
+    opacity: 0;
+    z-index: 10;    /* 他の要素の上に表示されるように */
+}
+
+.message-content:hover .copy-message-btn {
+    opacity: 1;
+}
+
+.copy-message-btn:hover {
+    background: rgba(0, 0, 0, 0.8);  /* 黒背景（80%の不透明度） */
+    color: white;                     /* 白文字 */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);  /* シャドウも黒に変更 */
+}
+
+.message-content {
+    background: var(--glass-bg);
+    padding: 1.2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--neumorphic-shadow);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transition: var(--transition);
+    position: relative;
+    margin-bottom: 35px;  /* ボタンの分の余白を追加 */
+}
+
+.message-content:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+}
+
+.user-message .message-content {
+    background: var(--user-message-bg);
+    color: var(--user-message-text);
+    border: none;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+/* メッセージ内の画像コンテナ */
+.message-image-container {
+    margin-bottom: 1rem;
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--neumorphic-shadow);
+}
+
+/* メッセージ内の画像 */
+.message-image {
+    max-width: 100%;
+    max-height: 300px;
+    display: block;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.message-image:hover {
+    transform: scale(1.02);
+}
+
+/* メッセージのテキスト */
+.message-text {
+    margin-top: 0.5rem;
+    position: relative;
+}
+
+/* ユーザーメッセージの折りたたみ/展開スタイル */
+.message-text.collapsed {
+    white-space: pre-line;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    position: relative;
+    padding-right: 2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.message-text.collapsed.long-text::after {
+    content: '...';
+    position: absolute;
+    right: 0.5rem;
+    color: inherit;
+    opacity: 0.7;
+}
+
+.message-text.expanded {
+    white-space: pre-wrap;
+    cursor: pointer;
+}
+
+/* 画像アップロードボタンと送信ボタンの位置調整 */
+#image-upload-btn,
+#send-btn {
+    transform: translateY(-13px); /* 上に2px移動。必要に応じて数値を調整してください */
+}
+
+/* 展開/折りたたみアイコン */
+.toggle-message {
+    position: absolute;
+    right: -1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary-gradient);
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
+}
+
+.message-content:hover .toggle-message {
+    opacity: 1;
+}
+
+.toggle-message:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* モデルバッジのスタイル */
+.model-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bot-avatar-bg);
+    color: var(--bot-avatar-color);
+    flex-shrink: 0;
+    box-shadow: var(--neumorphic-shadow);
+    font-size: 1.3rem;
+    transition: var(--transition);
+    padding: 0.5rem;
+}
+
+.avatar img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    margin-top: 2px;
+}
+
+.avatar:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.user-message .avatar {
+    background: var(--user-message-bg);
+}
+
+#input-container {
+    padding: 1.2rem;
+}
+
+#user-input {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+    position: relative;
+    background: var(--glass-bg);
+    border-radius: var(--border-radius);
+    padding: 0.8rem;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--neumorphic-shadow);
+    transition: var(--transition);
+}
+
+
+#user-input:focus-within {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+}
+
+#message {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: var(--input-bg);
+    color: var(--text-color);
+    resize: none;
+    min-height: 24px;
+    max-height: 200px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-y: auto;
+    transition: var(--transition);
+}
+
+#message:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.action-button {
+    padding: 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    background: var(--primary-gradient);
+    color: white;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+}
+
+.action-button:active {
+    transform: translateY(1px);
+}
+
+#image-preview-container {
+    display: none;
+    margin: 0.8rem 0;
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--neumorphic-shadow);
+    background: var(--glass-bg);
+    padding: 0.5rem;
+}
+
+#image-preview {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: var(--border-radius);
+    display: block;
+    margin: 0 auto;
+}
+
+#remove-image-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 10;
+}
+
+#remove-image-btn:hover {
+    transform: scale(1.1);
+    background: rgba(239, 68, 68, 0.8);
+}
+
+.loading {
+    display: none;
+    position: absolute;
+    top: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    animation: pulse 2s infinite;
+}
+
+.markdown-body {
+    color: var(--text-color);
+}
+
+.markdown-body pre {
+    background: #1a1a1a;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+    position: relative;
+    box-shadow: var(--neumorphic-shadow);
+}
+
+.markdown-body pre code {
+    display: block;
+    padding: 1.2rem;
+    overflow-x: auto;
+    color: #ffffff;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: var(--transition);
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+#model-selector {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--glass-bg);
+    border-top: 1px solid var(--glass-border);
+    box-shadow: var(--neumorphic-shadow);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    white-space: nowrap;
+    user-select: none;
+    scroll-behavior: smooth;  /* スクロールを滑らかに */
+}
+
+#model-selector::-webkit-scrollbar {
+    display: none;
+}
+
+.model-wrapper {
+    position: relative;
+    cursor: move;
+    touch-action: none;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);  /* バウンス効果を追加 */
+    will-change: transform;  /* パフォーマンス最適化 */
+}
+
+.model-option {
+    display: none;
+}
+
+.model-label {
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);  /* トランジションを滑らかに */
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--neumorphic-shadow);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transform-origin: center;  /* 変形の中心点を設定 */
+}
+
+.model-label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+}
+
+.model-wrapper.dragging {
+    opacity: 0.9;  /* 完全な透明ではなく */
+    transform: scale(1.05);  /* ドラッグ中は少し大きく */
+    z-index: 100;  /* 他の要素の上に表示 */
+    cursor: grabbing;
+    filter: brightness(1.1);  /* やや明るく */
+}
+
+.model-wrapper.dragging .model-label {
+    background: var(--primary-gradient);
+    color: white;
+    cursor: grabbing;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);  /* ドラッグ中は影を強調 */
+}
+
+/* ドラッグ中の他のモデルの動き */
+.model-wrapper:not(.dragging) {
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 選択されたモデルのスタイル */
+.model-option:checked + .model-label {
+    background: var(--primary-gradient);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+    font-weight: bold;
+    transform: translateY(-2px);
+}
+
+/* 選択されたモデルにチェックマークを追加 */
+.model-option:checked + .model-label::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: 5px;
+    font-size: 0.8rem;
+    color: white;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(255, 215, 0, 0.3);
+}
+
+/* 設定モーダルのスタイル追加 */
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-size: 1.1rem;
+}
+
+.model-order-section {
+    display: none; /* デフォルトでは非表示 */
+}
+
+.model-order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative; /* 追加 */
+    padding: 1rem 0; /* ドラッグ時の余白を確保 */
+}
+
+.model-order-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    cursor: move;
+    touch-action: none;
+    transition: var(--transition);
+    position: relative; /* 追加 */
+    user-select: none; /* テキスト選択を防止 */
+}
+
+.model-order-item.dragging {
+    opacity: 0.9;
+    transform: scale(1.02);
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: var(--glass-shadow); /* ドラッグ時の影を追加 */
+    pointer-events: none; /* ドラッグ中の他の要素との干渉を防止 */
+}
+
+.model-order-item i {
+    margin-right: 0.8rem;
+    color: var(--primary-color);
+}
+
+.model-order-item.dragging i {
+    color: white;
+}
+
+.model-order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    padding: 1rem 0;
+    margin: 0 auto; /* 中央揃えのため追加 */
+    width: 100%; /* 幅を設定 */
+}
+
+.model-selector-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.scroll-button {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: sticky;
+    z-index: 1;
+    box-shadow: var(--glass-shadow);
+    transition: var(--transition);
+}
+
+.scroll-button:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.scroll-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    /* ヘッダータイトルとロゴのコンテナ */
+    .header-title {
+        position: absolute;
+        left: 98px;
+        transform: scale(0.8);
+        transform-origin: left center;
+    }
+
+    /* ロゴのスタイル */
+    .header-logo {
+        height: 30px;
+        width: 30px;
+        object-fit: contain;
+    }
+
+    /* ヘッダートグルボタンの位置調整 */
+    .header-toggle {
+        top: 60px; /* 78pxから60pxに変更してより上に配置 */
+        border-radius: var(--border-radius);
+        opacity: 0.7;
+        z-index: 10000;
+    }
+
+    /* ヘッダー非表示時（アクティブ時）のスタイルは変更なし */
+    .header-toggle.active {
+        top: -3px;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        opacity: 1;
+    }
+
+    /* ヘッダータイトル */
+    #chat-header h1 {
+        font-size: 1rem;
+    }
+
+    /* ロゴリンクをボタン風に変更 */
+    .logo-link {
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 50%;
+        width: 60px;    /* 他のボタンと同じサイズに */
+        height: 65px;   /* 他のボタンと同じサイズに */
+        padding: 12px;  /* パディングを調整 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--neumorphic-shadow);
+    }
+
+    /* モバイル版ではタイトルテキストを非表示に */
+    .logo-link h1 {
+        display: none;
+    }
+
+    /* ヘッダーボタン間の間隔 */
+    .header-buttons {
+        gap: 10px;
+    }
+
+    /* ログアウトボタンのモバイル調整 */
+    .logout-btn {
+        padding: 0.4rem 0.8rem;  /* パディングを小さく */
+        font-size: 0.8rem;    /* フォントサイズを小さく */
+        height: 35px;         /* 高さを固定 */
+        min-width: 90px;     /* 最小幅を設定 */
+    }
+
+    .logout-btn i {
+        font-size: 0.8rem;    /* アイコンも小さく */
+    }
+    
+    /* 設定ボタンとダークモードボタンのツールチップを非表示 */
+    .tooltip::before,
+    .tooltip::after,
+    .settings-btn::before,
+    .settings-btn::after,
+    .theme-toggle-btn::before,
+    .theme-toggle-btn::after {
+        display: none !important;
+    }
+
+    #sidebar {
+        z-index: 10000;
+    }
+
+    /* サイドバーが開いている時のみヘッダーボタンを非表示 */
+    #sidebar.active ~ #main-content #chat-header .header-buttons,
+    #sidebar.active ~ #main-content #chat-header .header-title,
+    #sidebar.active ~ #main-content #header-toggle {  /* この行を追加 */
+        display: none;
+    }
+
+    .message {
+        flex-direction: column;
+        align-items: flex-start;
+        max-width: 100%;
+        gap: 0.5rem;
+        margin: 1rem 0;
+        overflow-x: hidden;  /* 横スクロールを無効化 */
+        width: 100%;        /* 幅を100%に固定 */
+        position: relative; /* 位置を相対的に設定 */
+    }
+
+
+    .message-image {
+        max-height: 200px;
+    }
+
+    .message-text.collapsed {
+        -webkit-line-clamp: unset; /* 行数制限を解除 */
+        white-space: pre-wrap;     /* 改行を保持したまま全て表示 */
+        display: block;            /* -webkit-box を上書き */
+    }
+
+    /* 省略記号を非表示に */
+    .message-text.collapsed.long-text::after {
+        display: none;
+    }
+
+    /* モデル側のメッセージの間隔調整 */
+    .message:not(.user-message) {
+        margin-top: 0.1rem;    /* 上部の余白を減らす */
+        margin-bottom: 0.1rem; /* 下部の余白を減らす */
+        padding: 0.1rem;       /* 内側の余白も減らす */
+    }
+
+    /* ユーザーメッセージの直後のモデルメッセージの余白をさらに小さく */
+    .user-message + .message:not(.user-message) {
+        margin-top: -1rem;    /* 負のマージンで上に詰める */
+    }
+
+    /* ユーザーメッセージの構造を統一 */
+    .user-message {
+        align-items: flex-end;
+        margin-left: auto;
+    }
+
+    /* ユーザーメッセージのアバターを右側に配置 */
+    .user-message .avatar {
+        order: -1;
+        margin-right: 0;
+        align-self: flex-end;
+    }
+
+    /* ユーザーメッセージのコンテンツを左側に配置 */
+    .user-message .message-content {
+        margin-left: auto;
+        margin-right: 0;
+        max-width: 80%;
+    }
+
+    /* 既存のメッセージスタイル調整も維持 */
+    .message:not(.user-message) {
+        align-items: flex-start;
+    }
+
+    .message:not(.user-message) .avatar {
+        order: -1;
+        margin-left: 0;
+        align-self: flex-start;
+    }
+
+    /* モデル側のメッセージの余白調整 */
+    .message:not(.user-message) .message-content {
+        margin-right: auto;
+        margin-left: 0;
+        max-width: 80%;
+    }
+
+    /* アバターのサイズと余白の調整 */
+    .avatar {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 4px;
+    }
+
+    /* アバター内の画像サイズも調整 */
+    .avatar img {
+        width: 95%;    /* 80%から85%に拡大 */
+        height: 95%;   /* 80%から85%に拡大 */
+        object-fit: contain;
+        margin-top: 3px;
+    }
+
+    /* モデル側のメッセージテキストの追加スタイル */
+    .message-text {
+        width: 100%;  /* 幅を確保 */
+        box-sizing: border-box;  /* パディングを幅に含める */
+    }
+
+    #message {
+        /* モバイル表示時のプレースホルダー設定 */
+        &::placeholder {
+            content: attr(data-mobile-placeholder);
+        }
+        max-height: 70px;     /* 最大の高さも制限 */
+    }
+
+     /* モバイル用の調整が必要な場合はここに追加 */
+     #image-upload-btn,
+     #send-btn {
+         transform: translateY(-1px); /* モバイル用に微調整する場合 */
+     }
+
+    /* プレースホルダーテキストの位置調整 */
+    #message::placeholder {
+        line-height: 1;         /* 1.2から1に減らしてさらに詰める */
+        padding-top: 0;         
+        margin-top: -3px;       /* 上部に負のマージンを追加 */
+        position: relative;      /* 位置調整のため追加 */
+        top: -2px;              /* さらに上に移動 */
+    }
+
+    .settings-section {
+        margin-bottom: 5.5rem;  /* モバイル用に微調整する場合 */
+    }
+
+    /* チャットヘッダーを固定 */
+    #chat-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: var(--header-bg);
+        padding: 0.5rem;  /* 上下のパディングを小さく */
+        min-height: 50px; /* 最小の高さを設定 */
+    }
+
+    /* チャットボックスの調整 */
+    #chat-box {
+        padding-top: 90px; /* ヘッダーの高さ分のパディング */
+        padding-bottom: 200px; /* 入力コンテナとモデルセレクターの高さ分の余白 */
+        height: 100vh;
+        overflow-y: auto;
+        position: relative;
+        z-index: 1;
+        transition: var(--transition);
+    }
+
+    /* 入力コンテナの配置 */
+    #input-container {
+        position: fixed;
+        top: 65%;  /* 120px から 220px に変更 */
+        bottom: auto;
+        left: 0;
+        right: 0;
+        background: var(--background-color);
+        z-index: 100;
+        padding: 0.8rem;
+        margin-bottom: 0; /* 下部マージンを削除 */
+        /* キーボード表示時のビューポート変更に対応 */
+        transform: translateY(0);
+        -webkit-transform: translateY(0);
+        width: 100%;  /* 追加: 幅を100%に設定 */
+    }
+
+    /* モデルセレクターの配置 */
+    #model-selector {
+        position: fixed;
+        top: 81%; /* 185px から 285px に変更 */
+        bottom: auto;
+        left: 0;
+        right: 0;
+        background: var(--background-color);
+        z-index: 100;
+        padding: 0.8rem;
+        border-bottom: 1px solid var(--glass-border);
+        border-top: 1px solid var(--glass-border);
+        margin-bottom: 0; /* 下部マージンを削除 */
+        /* キーボード表示時のビューポート変更に対応 */
+        transform: translateY(0);
+        -webkit-transform: translateY(0);
+        transition: var(--transition);
+    }
+
+    /* 入力欄のスタイル調整 */
+    #user-input {
+        margin-bottom: 0;
+    }
+
+    /* モデルラベルのサイズ調整 */
+    .model-label {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .model-order-section {
+        display: block;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+        max-height: 85vh;
+    }
+
+    .modal-body {
+        padding: 15px;
+        max-height: calc(85vh - 4rem); /* ヘッダー分を引いた高さ */
+    }
+
+    .model-order-list {
+        width: 75%; /* モバイルでの横幅を調整 */
+        max-width: 300px; /* 最大幅を設定 */
+    }
+
+    .model-order-item {
+        padding: 0.6rem; /* パディングも少し縮小 */
+        font-size: 0.9rem; /* フォントサイズも少し小さく */
+    }
+
+    /* メッセージコピーボタンのモバイル用スタイル */
+    .copy-message-btn {
+        position: absolute;
+        top: 50%;     /* 中央揃え */
+        transform: translateY(-50%);  /* 中央揃えの調整 */
+        right: -55px;  /* メッセージの右側に配置 */
+        width: 50px;   /* 幅を固定 */
+        height: 30px;  /* 高さを固定 */
+        padding: 0;    /* パディングをリセット */
+        font-size: 0.7rem; /* フォントサイズを小さく */
+        opacity: 1;    /* 常に表示 */
+        background: var(--glass-bg);
+        z-index: 11;
+        display: flex;  /* Flexboxを使用して中央揃え */
+        align-items: center;  /* 垂直方向の中央揃え */
+        justify-content: center;  /* 水平方向の中央揃え */
+        border-radius: var(--border-radius);  /* 通常の角丸に変更 */
+    }
+
+    /* ホバー時の表示制御を解除 */
+    .message-content:hover .copy-message-btn {
+        opacity: 1;
+    }
+
+    /* メインコンテンツ全体の移動を調整 */
+    #main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: var(--chat-box-bg);
+        min-width: 0;
+        height: 100vh;
+        position: relative;
+        margin-left: 0;
+        transition: var(--transition);
+        width: 100%;
+    }
+
+    #main-content.sidebar-active {
+        margin-left: 280px;
+        width: calc(100% - 280px);  /* 追加: サイドバーの幅を考慮 */
+    }
+
+    #main-content.sidebar-active #input-container {
+        left: 280px;  /* 追加: サイドバー開放時の位置調整 */
+    }
+
+    #main-content.sidebar-active #model-selector {
+        left: 280px;  /* 追加: サイドバー開放時の位置調整 */
+    }
+
+    #main-content.sidebar-active #chat-box {
+        margin-left: 0;  /* 追加: サイドバー開放時のマージン調整 */
+    }
+
+    /* 画像プレビューのサイズ調整 */
+    #image-preview-container {
+        max-width: 80px;  /* 150pxから80pxに縮小 */
+        margin: 0.3rem auto;  /* 余白も小さく */
+    }
+
+    #image-preview {
+        max-width: 100%;
+        max-height: 60px;  /* 120pxから60pxに縮小 */
+        object-fit: contain;
+    }
+
+    /* 削除ボタンも小さく */
+    #remove-image-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        top: 0.3rem;
+        right: 0.3rem;
+    }
+
+    /* サイドバーがアクティブな時のメッセージ表示制御 */
+    #sidebar.active ~ #main-content #chat-box {
+        opacity: 0;  /* メッセージを非表示 */
+        visibility: hidden;  /* 完全に非表示にする */
+    }
+
+    /* サイドバーがアクティブな時の入力欄も非表示 */
+    #sidebar.active ~ #main-content #input-container,
+    #sidebar.active ~ #main-content #model-selector {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    /* トランジションを追加してスムーズな表示/非表示を実現 */
+    #chat-box,
+    #input-container,
+    #model-selector {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .scroll-button {
+        display: none;
+    }
+}
+
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-hover);
+}

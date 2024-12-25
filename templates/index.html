@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOLTMIND chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/tokyo-night-dark.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.18/marked.min.js"></script>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+</head>
+<body>
+    <div id="app-container">
+        <div id="sidebar">
+            <button id="new-chat-btn">
+                <i class="fas fa-plus"></i>
+                新規チャット
+            </button>
+            <div id="chat-history">
+                {% for chat in chats %}
+                <div class="chat-item" data-chat-id="{{ chat.id }}">
+                    <i class="fas fa-comment"></i>
+                    <span class="chat-item-title">{{ chat.title }}</span>
+                    <button class="delete-chat-btn" title="チャットを削除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="main-content">
+            <button id="header-toggle" class="header-toggle">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+            <div id="chat-header">
+                <button id="toggle-sidebar">
+                    <span></span>
+                </button>
+                <div class="header-title">
+                    <a href="https://voltmind.jp/" target="_blank" class="logo-link">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="VOLTMIND logo" class="header-logo">
+                        <h1>VOLTMIND chat</h1>
+                    </a>
+                </div>
+                <div class="header-buttons">
+                    <button id="settings-btn" class="settings-btn tooltip">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button id="theme-toggle" class="theme-toggle-btn tooltip">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="{{ url_for('logout') }}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        ログアウト
+                    </a>
+                </div>
+            </div>
+
+            <div id="chat-box"></div>
+
+            <div id="input-container">
+                <div id="user-input">
+                    <div class="loading">考え中...</div>
+                    <button id="image-upload-btn" class="action-button">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <input type="file" id="image-input" accept="image/*" style="display: none;">
+                    <div id="image-preview-container">
+                        <img id="image-preview" alt="">
+                        <button id="remove-image-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <textarea 
+                        id="message"
+                        placeholder="メッセージを入力...(Ctrl+Enterで送信 ※macはCommand+Enter)"
+                        data-mobile-placeholder="メッセージを入力..."
+                    ></textarea>
+                    <button id="send-btn" class="action-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="model-selector-container">
+                <button id="scroll-left" class="scroll-button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div id="model-selector">
+                    {% for model in models %}
+                    <input type="radio" name="model" value="{{ model.name }}" id="{{ model.name }}" class="model-option"{% if model.name == 'groq' %} checked{% endif %}>
+                    <label for="{{ model.name }}" class="model-label">{{ model.display_name }}</label>
+                    {% endfor %}
+                </div>
+
+                <button id="scroll-right" class="scroll-button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- 設定モーダル -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>設定</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- カラー設定セクション -->
+                <div class="settings-section">
+                    <h3>アクセントカラー</h3>
+                    <div class="color-setting">
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="accent-color" value="#FFD700">
+                            <span class="color-value">#FFD700</span>
+                        </div>
+                        <button id="reset-color" class="reset-btn">
+                            <i class="fas fa-undo"></i> デフォルトに戻す
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- モデル順序設定セクション (モバイルのみ表示) -->
+                <div class="settings-section model-order-section">
+                    <h3>モデルの順序</h3>
+                    <div class="model-order-list">
+                        <!-- JavaScriptで動的に生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

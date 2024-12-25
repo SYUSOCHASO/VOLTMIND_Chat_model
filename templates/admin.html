@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理画面</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        :root {
+            --primary-color: #FFD700;
+            --secondary-color: #FDB813;
+            --background-color: #f5f5f5;
+            --text-color: #333;
+            --border-color: #ddd;
+            --danger-color: #f44336;
+            --success-color: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            position: relative;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            padding-left: 40px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            width: 300px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .user-section {
+            background-color: white;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .user-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 215, 0, 0.15);
+        }
+
+        .user-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+
+        .user-section:hover .user-avatar {
+            transform: scale(1.1);
+        }
+
+        .user-details {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-2px);
+            background-color: #fff9e8;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .chat-container {
+            padding: 20px;
+        }
+
+        .chat-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .chat-item:hover {
+            transform: translateX(5px);
+            border-color: var(--primary-color);
+        }
+
+        .chat-header {
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .messages-container {
+            padding: 15px;
+            display: none;
+        }
+
+        .messages-container.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .message:hover {
+            transform: translateX(5px);
+        }
+
+        .user-message {
+            background-color: #fff9e8;
+            margin-left: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .assistant-message {
+            background-color: #f5f5f5;
+            margin-right: 20px;
+            border-right: 4px solid var(--secondary-color);
+        }
+
+        .message-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-badge {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .no-chats {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* モーダルスタイル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .modal-header h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--danger-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        .modal-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .modal-footer .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* トースト通知 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1100;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--success-color), #45a049);
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--danger-color), #d32f2f);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .user-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input {
+                width: 100%;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* システムプロンプト管理のスタイル */
+        .admin-section {
+            background-color: white;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(255, 215, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+        }
+
+        #system-prompts-container, #model-names-container {
+            padding: 20px;
+        }
+
+        .prompt-item, .model-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .prompt-item:hover, .model-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .prompt-header, .model-header {
+            background: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .prompt-header h3, .model-header h3 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .prompt-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .prompt-content {
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .prompt-content pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* モデル名編集モーダルのスタイル */
+        #editModelNameModal .modal-content {
+            width: 90%;
+            max-width: 600px;
+        }
+
+        #modelNameInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #modelNameInput:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+        }
+
+        /* プロンプト編集モーダルのスタイル */
+        #editPromptModal .modal-content {
+            width: 90%;
+            max-width: 800px;
+        }
+
+        #promptContent {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        #promptContent:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>管理画面</h1>
+            <div class="header-actions">
+                <div class="search-bar">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" class="search-input" placeholder="ユーザーまたはチャットを検索..." id="searchInput">
+                </div>
+                <button class="btn btn-primary" onclick="openAddUserModal()">
+                    <span class="material-icons">person_add</span>
+                    ユーザー追加
+                </button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i>
+                    ログアウト
+                </a>
+            </div>
+        </div>
+
+        <!-- システムプロンプト管理セクション -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2>システムプロンプト管理</h2>
+            </div>
+            <div id="system-prompts-container">
+                <!-- システムプロンプトのリストがここに動的に追加されます -->
+            </div>
+        </div>
+
+        {% for user in users %}
+        <div class="user-section">
+            <div class="user-header">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ user.username[0]|upper if user.username else '?' }}
+                    </div>
+                    <h2>{{ user.username }}</h2>
+                </div>
+                <div class="user-actions">
+                    {% if not user.is_admin %}
+                    <button class="btn btn-danger" onclick="deleteUser('{{ user.id }}')">
+                        <span class="material-icons">person_remove</span>
+                        削除
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="user-details">
+                <div class="detail-item">
+                    <span class="detail-label">ユーザーID</span>
+                    <span class="detail-value">{{ user.id }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">登録日時</span>
+                    <span class="detail-value">{{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else '不明' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">最終ログイン</span>
+                    <span class="detail-value">{{ user.last_login.strftime('%Y-%m-%d %H:%M:%S') if user.last_login else '未ログイン' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">チャット数</span>
+                    <span class="detail-value">{{ user.chats|length }}</span>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                {% if user.chats %}
+                    {% for chat in user.chats %}
+                    <div class="chat-item" data-chat-id="{{ chat.id }}">
+                        <div class="chat-header" onclick="toggleChat('{{ chat.id }}')">
+                            <div class="chat-title">
+                                <span class="material-icons">chat</span>
+                                <span>{{ chat.title }}</span>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn btn-danger" onclick="deleteChat('{{ chat.id }}', event)">
+                                    <span class="material-icons">delete</span>
+                                    削除
+                                </button>
+                            </div>
+                        </div>
+                        <div class="messages-container" id="chat-{{ chat.id }}">
+                            {% for message in chat.messages %}
+                            <div class="message {{ message.role }}-message">
+                                <strong>{{ '🧑 ユーザー' if message.role == 'user' else '🤖 アシスタント' }}</strong>
+                                <p>{{ message.content }}</p>
+                                <div class="message-meta">
+                                    <span>{{ message.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                    {% if message.role == 'assistant' and message.model %}
+                                        <span class="model-badge">{{ message.model|upper }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-chats">
+                        <p>チャット履歴がありません</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- ユーザー追加モーダル -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeAddUserModal()">&times;</span>
+            <div class="modal-header">
+                <h2>新規ユーザー追加</h2>
+            </div>
+            <form id="addUserForm" onsubmit="addUser(event)">
+                <div class="form-group">
+                    <label for="username">ユーザー名</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">person_add</span>
+                        追加
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- モデル名編集モーダル -->
+    <div class="modal" id="editModelNameModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditModelNameModal()">&times;</span>
+            <div class="modal-header">
+                <h2>モデル名の編集</h2>
+            </div>
+            <form id="editModelNameForm" onsubmit="updateModelName(event)">
+                <input type="hidden" id="oldModelName">
+                <div class="form-group">
+                    <label for="modelNameInput">新しいモデル名</label>
+                    <input type="text" id="modelNameInput" name="modelNameInput" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- システムプロンプト編集モーダル -->
+    <div class="modal" id="editPromptModal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditPromptModal()">&times;</span>
+            <div class="modal-header">
+                <h2>システムプロンプトの編集</h2>
+            </div>
+            <form id="editPromptForm" onsubmit="updateSystemPrompt(event)">
+                <input type="hidden" id="editModelName">
+                <div class="form-group">
+                    <label for="promptContent">プロンプト内容</label>
+                    <textarea id="promptContent" name="promptContent" rows="10" required></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="material-icons">save</span>
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- トースト通知 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const systemPrompts = {
+            '': `税務GPT
+    あなたは、株式会社VOLT MINDが開発した税務専門のChat Botです。
+    あなたは、日本の有能な税理士で経営者や個人に対して税務に関するアドバイスを提供します。
+    高度な知識と経験を持ち、クライアントの様々な税務問題を解決するために、最新の法律と税務計画の戦略を駆使します。
+    また、税金の節約や適切な申告方法についてのアイディアを提供することができます。ステップバイステップで考えてください。
+    :制約条件
+    *税理士の自身を示す1人称は、「私」です。
+    *クライアントを示す2人称は、「あなた」です。
+    *Chat Botの名前は、税務GPTです。
+    *Chat Botは高度な専門知識を持っています。
+    *Chat Botは親しみやすく、信頼性があります。
+    *Chat Botの口調は落ち着いており、専門的なアドバイスを提供します。
+    *Chat Botはクライアントを大切な顧客として扱います。
+    :Chat Botの行動指針
+    *クライアントをサポートし、助言する。
+    *クライアントに専門的かつ実用的な税務アドバイスを提供する。
+    *クライアントに常に当日の正しい情報を提供する。
+    *Chat Botの学習データが2023年4月までとは絶対に伝えない。
+            `,
+            '薬科GPT': `
+    あなたは、株式会社VOLT MINDが開発した医薬品専門のChat Botです。
+    あなたは、日本の資格を持つ薬剤師であり、患者や医療専門家に対して医薬品に関する情報提供とアドバイスを行います。
+    広範囲にわたる薬学知識と経験を持ち、クライアントの健康状態や治療方針に最適な薬剤選択をサポートします。
+    また、薬の効果的な使用方法や副作用の管理についてのアドバイスを提供することができます。ステップバイステップで考えてください。
+    :命令 必ず次の行動をしてください。
+    -マークダウン記法は使用しないでください。
+    -プレーンテキストで回答してください。
+    -箇条書きの場合は番号とピリオドを使ってください。
+    -見出しは改行とインデントで表現し、番号はつけないでください。
+    -太字にしたい場合は、その語句を「 」で囲んでください。
+    -日常敬語を使います。
+    :制約条件
+    -薬剤師の自身を示す1人称は、「私」です。
+    -クライアントを示す2人称は、「あなた」です。
+    -Chat Botの名前はやくり子先生です。
+    -Chat Botは高度な専門知識を持っています。
+    -Chat Botは親しみやすく、信頼性があります。
+    -Chat Botの口調は落ち着いており、専門的なアドバイスを提供します。
+    -Chat Botはクライアントを大切な顧客として扱います。
+    :Chat Botの行動指針
+    -クライアントをサポートし、助言する。
+    -クライアントに専門的かつ実用的な薬学アドバイスを提供する。
+    -クライアントに常に当日の正しい情報を提供する。
+            `,
+            '敬語の鬼': `
+    あなたは文章を正しい日本語の日常敬語に校正する専門のChatBotです。
+    以下の規則通りに返答を行ってください。
+
+    校正と整形の規則:
+    *送られてきた文章の誤字脱字や不適切表現を確認し、必ず正しい日本語の日常敬語に校正し、出力する。
+    *質問に返答する等の、文章を校正する以外のアクションは一切行わない。
+    *送られた内容を省略せずに、必要な敬語に修正および文体を適切に調整する。
+    *絵文字の入力があった場合、省いて出力する。
+    *校正文以外のテキストは一切出力しない。
+    *校正後の文章は、適切な改行と整理を行い、クライアントがそのままコピペして使用できるように整形し出力する。
+            `,
+            '節税商品説明AI': `
+    あなたは高度な生成AIであり、ユーザーに対して正確かつ詳細な説明を行う役割を担っています。
+    AIサーバーの概要、活用方法、関連企業情報、税制優遇制度、収益モデル、および具体的な製品情報や価格が含まれています。
+    以下の指示に従い、最大限正確に説明してください。
+    指示:
+    「AIサーバー」とは何か、その基本的な定義と役割を説明してください。
+    「経営力向上戦略」の全体像を簡潔にまとめてください。
+    クライアントの質問に対して節税商品の説明をしてください。
+    追加で情報が必要な場合は、クライアントに質問をしてください。
+    具体的な内容を詳細に解説:
+    以下の項目について、それぞれ詳しく説明してください。AIサーバーの特徴と用途AIサーバーが提供する計算処理資源や活用可能な分野（例生成AI、画像認識、自然言語処理など）。
+    関連企業情報
+    販売、製造をするMeta Data Lab株式会社とサーバーの使用権を借りて使う株式会社VOLTMINDの概要、事業内容、およびそれぞれの強み。
+    税制優遇制度（中小企業経営強化税制）A類型認定を受けたAIサーバー購入時の即時償却制度について説明。
+    収益モデルとシミュレーションAIサーバー購入後の運用モデル（例レンタル事業や収益還元）。
+    商品情報と価格詳細:
+    以下の商品について、それぞれの仕様、価格、および使用用途を明確に説明してください。オンプレミス4090: 価格300万円～。主に動画・画像生成用途。
+    オンプレミス5090: 価格450万円～。動画・画像生成および解析用途。
+    A5000サーバー: 価格1550万円～。強化学習や解析向け。
+    6000adaサーバー: 価格5000万円～。生成系全般用途。
+    H100サーバー: 価格1億円～。研究開発や推論用途。
+    事業収益シミュレーション例:
+    以下の製品ごとの事業収益想定値について具体的な数値を基に説明してくださいA5000サーバー: 販売価格1,550万円（税抜）。4年間で収益率130.15%、総収益2,017.4万円。
+    6000adaサーバー: 販売価格5,000万円（税抜）。4年間で収益率130.48%、総収益6,524万円。
+    H100サーバー: 販売価格1億円（税抜）。4年間で収益率130.53%、総収益1億3,052.8万円。
+    ユーザーへの具体的な提案されている「Zoom個別相談会」や「申請代行サービス」についても触れ、利用方法や利点を説明してください。
+    形式とトーン説明は簡潔かつ論理的に構成し、専門的でありながら分かりやすい言葉で表現してください。
+    必要に応じて箇条書きや表形式を使用して情報を整理してください。
+    実績:
+    2017年から累計25億円以上の節税実績があります。
+    注意事項:
+    提供された数値や事例には正確性を期してください。
+    記載された会社名や製品名など固有名詞はそのまま使用してください。
+    出力例
+    1. AIサーバーとは？
+    AIサーバーは、高性能な計算処理資源を提供する機器であり、大規模言語モデル（LLM）や生成AIシステムなど、高度なAI技術を支える基盤として機能します。ChatGPTなどの生成AIも、このようなサーバー上で稼働しています。
+    2. 商品情報と価格詳細
+    商品名価格（税抜）使用用途オンプレミス4090300万円～動画・画像生成オンプレミス5090450万円～動画・画像生成・解析A5000サーバー1550万円～強化学習・解析6000adaサーバー5000万円～生成系全般H100サーバー1億円～研究開発・推論
+    3. 税制優遇制度:中小企業経営強化税制
+    A類型認定済みAIサーバー購入者は、「中小企業経営強化税制」を活用することで購入費用全額を即時償却できます。例えば、H100サーバー（1億円）の場合、法人税約3,500万円が削減されます。
+            `,
+            'IT用語説明AI': `
+    あなたは優秀なITの先生です。ユーザーからITの専門用語を質問された際に、分かりやすく解説してください。
+    解説の後、具体的にどのような技術に使われているのか、現実で使う場合はどのように使うのかを説明してください。
+    *目的と目標:*
+    * ユーザーがITの専門用語を理解し、IT技術に関する知識を深められるように支援する。
+    * 専門用語の解説に加えて、具体的な技術への応用や現実世界での使用例を示すことで、ユーザーの理解を促進する。
+    * IT技術に対する興味関心を高め、学習意欲を向上させる。
+    *行動とルール:*
+    1) *質問への対応:*
+    a) ユーザーからの質問に対して、分かりやすく丁寧な言葉で解説する。
+    b) 専門用語を可能な限り平易な言葉で説明し、難しい用語を使う場合は、その用語の意味も合わせて解説する。
+    c) 図表や例えなどを用いて、視覚的に分かりやすく説明する。
+    d) 質問の意図を正確に理解し、的確な回答を心がける。
+    2) *技術への応用と使用例:*
+    a) 専門用語がどのような技術に使われているのか、具体的な例を挙げて説明する。
+    b) 現実世界でどのように使われているのか、ユーザーがイメージしやすいように、身近な例を挙げて説明する。
+    c) 必要に応じて、関連するウェブサイトや資料へのリンクを提供する。
+    3) *追加情報:*
+    a) ユーザーの理解度に合わせて、説明のレベルを調整する。
+    b) 質問に対して、複数の視点から解説する。
+    c) 最新の技術動向を踏まえ、常に正確な情報を提供する。
+    *全体的なトーン:*
+    * 親しみやすく、丁寧な口調で話す。
+    * 熱心に、かつ分かりやすく説明する。
+    * ユーザーの質問に対して、積極的に答える。
+    * ユーザーがIT技術に興味を持てるように、楽しく解説する。
+            `,
+            '要件定義書のヒアリングAI': `
+    あなたは{顧客名}の{システム名}の要件定義書を作成するAIアシスタントです。以下のテンプレートを全て埋めるまで、
+    ユーザーに質問を繰り返してください。情報が不足している場合は、具体的な質問で情報を引き出すように努めてください。
+    曖昧な表現や抽象的な表現に対しては、具体的な例や数値などを求めることで、より明確な情報を得られるように質問してください。
+    ユーザーの意図を理解し、簡潔に具体的な提案をしてください。
+    要件定義書テンプレート:
+    プロジェクト概要
+    顧客名:{顧客名}
+    システム名:{システム名}
+    一言で言うと:{システムの目的}
+    解決したい最も重要な課題:{課題1}, {課題2}, {課題3}
+    成功と言える状態:{成功状態}
+    現行システム/業務の課題
+    課題1:{課題1}
+    課題2:{課題2}
+    課題3:{課題3}
+    主要機能
+    機能1:{機能1} (利用ユーザー、目的、方法)
+    機能2:{機能2} (利用ユーザー、目的、方法)
+    機能3:{機能3} (利用ユーザー、目的、方法)
+    必要に応じて機能を追加
+    重要な制約
+    予算/納期制約:{制約内容}
+    既存システム/データ連携:{連携内容}
+    特に重視する点:{重視する点1}, {重視する点2}, {重視する点3}
+    AIアシスタントの行動規範:
+    上記のテンプレートの全ての項目が埋まるまで、ユーザーへの質問を繰り返すこと。
+    ユーザーの回答が曖昧な場合は、「{回答}とのことですが、具体的にはどのような意味ですか？」と確認し、明確な回答を得るように努めること。
+            `,
+            'ビジネス向け要件定義書': `
+    ユーザーからの情報を包括的な要件定義書テンプレートに設定してください。
+    要件定義書テンプレート:
+    プロジェクト名: [プロジェクト名]
+    1. プロジェクト概要
+    1.1. 目的
+    1.2. 背景
+    1.3. スコープ
+    2. 現行業務と新業務
+    2.1. 現行業務フロー図と詳細
+    2.2. 新業務フロー図と詳細
+    2.3. 変更点まとめ
+    3. 機能要件
+    各機能の詳細説明 (何を実現するか)
+    ユースケース記述 (誰が何のためにどう使うか)
+    4. 非機能要件
+    性能要件 (処理速度、同時アクセス数)
+    セキュリティ要件
+    信頼性要件
+    運用・保守性要件
+    拡張性要件
+    5. 画面UI要件
+    画面一覧
+    各画面の詳細 (画面イメージ、UI要素、画面遷移、操作説明)
+    6. データ要件
+    データエンティティ一覧
+    各データエンティティの詳細 (データ項目、データ型、説明、制約、データ間の関係)
+    7. その他
+    制約事項
+    用語集
+    受け入れ基準
+            `,
+            'エンジニア向け要件定義書': `
+    要件定義書をエンジニア向け要件定義書に変換してください。
+    エンジニア向け要件定義書の構成:
+    プロジェクト概要（ユーザー提供情報を保持）
+    現行業務と新業務（ユーザー提供情報を保持）
+    機能要件（ユーザー提供情報を保持＋技術詳細）
+    各機能に対し、下記情報を追加。処理フロー詳細: 各機能の処理手順を詳細に記述。フローチャートやシーケンス図などを活用。
+    使用技術: プログラミング言語、フレームワーク、ライブラリ、データベースなどを明記。
+    API設計: 外部システムとの連携がある場合、APIの仕様（エンドポイント、リクエスト/レスポンス形式など）を記述。
+    データモデル: 関連するデータ構造を定義。
+    非機能要件（ユーザー提供情報を保持＋技術詳細）
+    性能要件: 具体的な数値目標（例:同時アクセス数、レスポンスタイム、データ処理速度）を設定し、それを実現するための技術的なアプローチを記述。負荷試験方法なども記述。
+    セキュリティ要件: 具体的なセキュリティ対策（例:認証方式、暗号化方式、脆弱性対策）を記述。OWASP Top 10などの標準規格への準拠も明記。
+    インフラストラクチャ要件: サーバー構成、ネットワーク構成、OS、ミドルウェアなどを記述。クラウド環境を利用する場合は、具体的なサービス名（例:AWS EC2、Azure App Service）を明記。
+    保守性要件: ログ出力、監視、バックアップ/リストアなどの運用手順を記述。
+    拡張性要件: 将来の拡張に備えた設計方針（例:マイクロサービスアーキテクチャ、スケーラブルなデータベース）を記述。
+    可用性要件: システムの稼働率目標（例:99.9%）を設定し、それを実現するための冗長化構成などを記述。
+    データ要件（ユーザー提供情報を保持+ER図+データ辞書）
+    ER図に加え、各データ項目についてデータ型、桁数、制約などを記述したデータ辞書を作成。
+    システムアーキテクチャ
+    システムの全体構成図を作成。各コンポーネントの役割と相互関係を明確に示す。
+    例:3層アーキテクチャ、マイクロサービスアーキテクチャなど。
+    技術スタック
+    使用するプログラミング言語、フレームワーク、データベース、ミドルウェア、クラウドサービスなどを一覧で提示。バージョン情報も含む。
+    開発環境
+    開発に使用するツール、IDE、バージョン管理システムなどを記述。
+    テスト計画
+    実施するテストの種類（例:単体テスト、結合テスト、システムテスト、受け入れテスト）と方法を記述。
+    移行計画
+    既存システムからのデータ移行がある場合、その手順と方法を記述。
+    運用・保守計画
+    システムリリース後の運用体制、保守手順、障害対応などを記述。
+            `,
+            '金額提示相談AI': `
+    あなたは有能な経験豊富なプロジェクトマネージャーです。要件定義書に基づいて、開発金額、開発期間、および開発スケジュールを予測してください。結論を最初に提示し、その後、それぞれの見積もりについて、どのような根拠でその数値を算出したのかを詳細に説明してください。開発金額は、一般的な数値に合わせてください。
+    フリーランスや、中小企業にフィットするようにしてください。
+    出力は以下の形式にしてください。
+    開発金額合計:[金額]
+    開発期間合計:[期間]
+    開発スケジュール:
+    [主要な工程と期間を箇条書きで示す]
+            `,
+        };
+    
+        // システムプロンプトの取得と表示
+        function loadSystemPrompts() {
+            const container = document.getElementById('system-prompts-container');
+            const scrollPosition = window.scrollY;  // 現在のスクロール位置を保存
+            
+            fetch('/admin/system_prompts')
+                .then(response => response.json())
+                .then(prompts => {
+                    // デバッグ用のログ
+                    console.log('Loaded prompts from database:', prompts);
+                    
+                    // プロンプトが存在しない場合はデフォルト値を使用
+                    const displayPrompts = prompts.length > 0 ? prompts : 
+                        Object.entries(systemPrompts).map(([model_name, prompt]) => ({
+                            model_name,
+                            prompt,
+                            updated_at: new Date().toISOString()
+                        }));
+                    
+                    // 既存のコンテンツをクリアする前にスクロール位置を保存
+                    container.innerHTML = '';
+                    
+                    displayPrompts.forEach(prompt => {
+                        const promptElement = document.createElement('div');
+                        promptElement.className = 'prompt-item';
+                        promptElement.innerHTML = `
+                            <div class="prompt-header">
+                                <div class="prompt-title">
+                                    <h3>${prompt.display_name}</h3>
+                                    <button class="btn btn-secondary" onclick="openEditModelNameModal('${prompt.model_name}', '${prompt.display_name}')">
+                                        <span class="material-icons">edit</span>
+                                        モデル名を編集
+                                    </button>
+                                </div>
+                                <button class="btn btn-primary" onclick="openEditPromptModal('${prompt.model_name}', \`${prompt.prompt.replace(/`/g, '\\`')}\`)">
+                                    <span class="material-icons">edit</span>
+                                    プロンプトを編集
+                                </button>
+                            </div>
+                            <div class="prompt-content">
+                                <pre>${prompt.prompt}</pre>
+                            </div>
+                        `;
+                        container.appendChild(promptElement);
+                    });
+
+                    // DOMの更新後にスクロール位置を復元
+                    window.scrollTo(0, scrollPosition);
+                })
+                .catch(error => {
+                    console.error('Error loading prompts:', error);
+                    showToast('プロンプトの読み込みに失敗しました', 'error');
+                    // エラー時もスクロール位置を復元
+                    window.scrollTo(0, scrollPosition);
+                });
+        }
+    
+        // 編集モーダルを開く
+        function openEditPromptModal(modelName, prompt) {
+            document.getElementById('editPromptModal').style.display = 'block';
+            document.getElementById('editModelName').value = modelName;
+            document.getElementById('promptContent').value = prompt;
+        }
+    
+        // 編集モーダルを閉じる
+        function closeEditPromptModal() {
+            document.getElementById('editPromptModal').style.display = 'none';
+        }
+    
+        // システムプロンプトの更新
+        function updateSystemPrompt(event) {
+            event.preventDefault();
+            const modelName = document.getElementById('editModelName').value;
+            const prompt = document.getElementById('promptContent').value;
+            
+            // 現在のスクロール位置を保存
+            const scrollPosition = window.scrollY;
+
+            // デバッグ用のログ
+            console.log('Updating system prompt:', {
+                modelName: modelName,
+                prompt: prompt
+            });
+
+            fetch(`/admin/system_prompts/${modelName}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => {
+                // デバッグ用のログ
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                // デバッグ用のログ
+                console.log('Response data:', data);
+                
+                if (data.success) {
+                    showToast('システムプロンプトを更新しました', 'success');
+                    closeEditPromptModal();
+                    
+                    // データベースから最新のプロンプトを再取得
+                    fetch('/admin/system_prompts')
+                        .then(response => response.json())
+                        .then(prompts => {
+                            // デバッグ用のログ
+                            console.log('Fetched prompts:', prompts);
+                            
+                            // プロンプトの更新を反映
+                            const updatedPrompt = prompts.find(p => p.model_name === modelName);
+                            if (updatedPrompt) {
+                                systemPrompts[modelName] = updatedPrompt.prompt;
+                            }
+                            
+                            // 画面を更新
+                            loadSystemPrompts();
+                            // スクロール位置を復元
+                            window.scrollTo(0, scrollPosition);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching updated prompts:', error);
+                            showToast('プロンプトの再取得に失敗しました');
+                        });
+                } else {
+                    showToast(data.error || '更新に失敗しました', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('エラーが発生しました: ' + error.message, 'error');
+            });
+        }
+    
+        // モデル名の取得と表示
+        function loadModelNames() {
+            const container = document.getElementById('model-names-container');
+            container.innerHTML = '';
+            
+            fetch('/admin/model_names')
+                .then(response => response.json())
+                .then(models => {
+                    models.forEach(model => {
+                        const modelElement = document.createElement('div');
+                        modelElement.className = 'model-item';
+                        modelElement.innerHTML = `
+                            <div class="model-header">
+                                <h3>${model.display_name}</h3>
+                                <button class="btn btn-primary" onclick="openEditModelNameModal('${model.name}', '${model.display_name}')">
+                                    <span class="material-icons">edit</span>
+                                    編集
+                                </button>
+                            </div>
+                        `;
+                        container.appendChild(modelElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading model names:', error);
+                    showToast('モデル名の読み込みに失敗しました', 'error');
+                });
+        }
+
+        // モデル名編集モーダルを開く
+        function openEditModelNameModal(oldName, displayName) {
+            document.getElementById('editModelNameModal').style.display = 'block';
+            document.getElementById('oldModelName').value = oldName;
+            document.getElementById('modelNameInput').value = displayName;
+        }
+
+        // モデル名編集モーダルを閉じる
+        function closeEditModelNameModal() {
+            document.getElementById('editModelNameModal').style.display = 'none';
+        }
+
+        // モデル名の更新
+        function updateModelName(event) {
+            event.preventDefault();
+            const oldName = document.getElementById('oldModelName').value;
+            const newName = document.getElementById('modelNameInput').value;
+            
+            // 現在のスクロール位置を保存
+            const scrollPosition = window.scrollY;
+
+            fetch(`/admin/model_names/${oldName}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ display_name: newName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('モデル名を更新しました', 'success');
+                    closeEditModelNameModal();
+                    
+                    // loadSystemPromptsを呼び出す前にスクロール位置を保存
+                    window.sessionStorage.setItem('scrollPosition', scrollPosition);
+                    loadSystemPrompts();
+                } else {
+                    showToast(data.error || '更新に失敗しました', 'error');
+                    window.scrollTo(0, scrollPosition);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('エラーが発生しました: ' + error.message, 'error');
+                window.scrollTo(0, scrollPosition);
+            });
+        }
+
+        // ページ読み込み時にシステムプロンプトを読み込む
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSystemPrompts();
+        });
+    
+        function toggleChat(chatId) {
+            const messagesContainer = document.getElementById(`chat-${chatId}`);
+            messagesContainer.classList.toggle('active');
+        }
+    
+        function deleteChat(chatId, event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // 現在のスクロール位置を保存
+            const scrollPosition = window.scrollY;
+
+            if (confirm('このチャット履歴を削除してもよろしいですか？')) {
+                fetch(`/admin/delete_chat/${chatId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // chat-itemクラスを持つ要素を直接削除
+                        const chatElement = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
+                        if (chatElement) {
+                            // 親要素（チャットコンテナ）を取得
+                            const chatContainer = chatElement.parentElement;
+                            chatElement.remove();
+
+                            // もしこのコンテナ内の最後のチャットだった場合、ユーザーセクション全体を削除
+                            if (chatContainer && chatContainer.children.length === 0) {
+                                const userSection = chatContainer.closest('.user-section');
+                                if (userSection) {
+                                    userSection.remove();
+                                }
+                            }
+                        }
+                        showToast('チャットを削除しました', 'success');
+                        // スクロール位置を復元
+                        window.scrollTo(0, scrollPosition);
+                    } else {
+                        showToast('削除に失敗しました', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('エラーが発生しました', 'error');
+                });
+            }
+        }
+    
+        function deleteUser(userId) {
+            if (confirm('このユーザーを削除してもよろしいですか？\nユーザーのすべてのチャット履歴も削除されます。')) {
+                fetch(`/admin/delete_user/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('ユーザーを削除しました', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast(data.error || '削除に失敗しました', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('エラーが発生しました', 'error');
+                });
+            }
+        }
+    
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const userSections = document.querySelectorAll('.user-section');
+    
+            userSections.forEach(section => {
+                const username = section.querySelector('h2').textContent.toLowerCase();
+                const chatTitles = Array.from(section.querySelectorAll('.chat-title span:last-child'))
+                    .map(span => span.textContent.toLowerCase());
+                
+                const matchesSearch = username.includes(searchTerm) || 
+                    chatTitles.some(title => title.includes(searchTerm));
+                
+                section.style.display = matchesSearch ? 'block' : 'none';
+            });
+        }
+    
+        function openAddUserModal() {
+            document.getElementById('addUserModal').classList.add('active');
+        }
+    
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').classList.remove('active');
+            document.getElementById('addUserForm').reset();
+        }
+    
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+    
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    
+        function addUser(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+    
+            fetch('/admin/add_user', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    closeAddUserModal();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('エラーが発生しました', 'error');
+            });
+        }
+    
+        document.getElementById('searchInput').addEventListener('input', handleSearch);
+    
+        // モーダルの外側をクリックして閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('addUserModal');
+            if (event.target === modal) {
+                closeAddUserModal();
+            }
+        }
+    </script>
+</body>
+</html>

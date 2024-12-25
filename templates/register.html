@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ユーザー登録 - VOLTMIND chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    <style>
+        :root {
+            --primary-color: #FFD700;
+            --primary-gradient: linear-gradient(135deg, #FFD700, #FDB813);
+            --primary-hover: #FDB813;
+            --background-color: #f0f4f8;
+            --text-color: #2c3e50;
+            --shadow-color: rgba(255, 215, 0, 0.1);
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px rgba(255, 215, 0, 0.1);
+            --border-radius: 20px;
+            --neumorphic-shadow: 
+                12px 12px 24px rgba(166, 180, 200, 0.2),
+                -12px -12px 24px rgba(255, 255, 255, 0.7);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --error-gradient: linear-gradient(135deg, #FF6B6B, #FF8E8E);
+            --success-gradient: linear-gradient(135deg, #FFD700, #FDB813);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(253, 184, 19, 0.1) 0%, transparent 50%);
+        }
+
+        .register-container {
+            background: var(--glass-bg);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--neumorphic-shadow);
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            transition: var(--transition);
+        }
+
+        .register-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-notice {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: var(--transition);
+            box-shadow: var(--neumorphic-shadow);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group:focus-within label {
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .password-hint {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .password-hint.valid {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--primary-color);
+        }
+
+        .password-hint.invalid {
+            background: rgba(255, 107, 107, 0.1);
+            color: #FF6B6B;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .back-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            margin-left: 0.3rem;
+        }
+
+        .back-link a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-link a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        .flash-message {
+            background: var(--error-gradient);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .validation-message {
+            position: absolute;
+            bottom: -1.5rem;
+            left: 0;
+            font-size: 0.85rem;
+            color: #FF6B6B;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: var(--transition);
+        }
+
+        .validation-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-hover);
+        }
+
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            input {
+                padding: 0.9rem 1rem;
+            }
+
+            button {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>ユーザー登録</h1>
+        <div class="admin-notice">
+            管理者専用ページです
+        </div>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('register') }}" onsubmit="return validateForm()">
+            <div class="form-group">
+                <label for="username">ユーザー名</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+                <div class="validation-message" id="username-validation"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" required autocomplete="new-password">
+                <div class="password-hint" id="password-hint">
+                    パスワードは8文字以上で入力してください
+                </div>
+                <div class="validation-message" id="password-validation"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">パスワード（確認用）</label>
+                <input type="password" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+                <div class="validation-message" id="confirm-password-validation"></div>
+            </div>
+            <button type="submit">登録</button>
+        </form>
+        <div class="back-link">
+            <a href="{{ url_for('admin') }}">管理画面に戻る</a>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const passwordHint = document.getElementById('password-hint');
+        const passwordValidation = document.getElementById('password-validation');
+        const confirmPasswordValidation = document.getElementById('confirm-password-validation');
+
+        function showValidationMessage(element, message, isError = true) {
+            element.textContent = message;
+            element.classList.add('show');
+            if (isError) {
+                element.style.color = '#FF6B6B';
+            } else {
+                element.style.color = '#FFD700';
+            }
+        }
+
+        function hideValidationMessage(element) {
+            element.classList.remove('show');
+        }
+
+        function updatePasswordHint(password) {
+            if (password.length === 0) {
+                passwordHint.className = 'password-hint';
+            } else if (password.length >= 8) {
+                passwordHint.className = 'password-hint valid';
+            } else {
+                passwordHint.className = 'password-hint invalid';
+            }
+        }
+
+        passwordInput.addEventListener('input', (e) => {
+            const password = e.target.value;
+            updatePasswordHint(password);
+            
+            if (password.length > 0 && password.length < 8) {
+                showValidationMessage(passwordValidation, 'パスワードは8文字以上で入力してください');
+            } else {
+                hideValidationMessage(passwordValidation);
+            }
+        });
+
+        confirmPasswordInput.addEventListener('input', (e) => {
+            const confirmPassword = e.target.value;
+            const password = passwordInput.value;
+            
+            if (confirmPassword.length > 0) {
+                if (password !== confirmPassword) {
+                    showValidationMessage(confirmPasswordValidation, 'パスワードが一致しません');
+                } else {
+                    showValidationMessage(confirmPasswordValidation, 'パスワードが一致しています', false);
+                }
+            } else {
+                hideValidationMessage(confirmPasswordValidation);
+            }
+        });
+
+        function validateForm() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            let isValid = true;
+            
+            if (password.length < 8) {
+                showValidationMessage(passwordValidation, 'パスワードは8文字以上で入力してください');
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                showValidationMessage(confirmPasswordValidation, 'パスワードが一致しません');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // フォーム送信時のスムーズなトランジション
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (validateForm()) {
+                document.querySelector('.register-container').style.opacity = '0.8';
+                document.querySelector('button').textContent = '登録中...';
+            }
+        });
+    </script>
+</body>
+</html>
